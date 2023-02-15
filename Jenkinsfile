@@ -10,11 +10,11 @@ pipeline {
             }
         }
         stage('Build') {
-            script {
+            steps {
                 echo 'Building image..'
                 sh 'docker buildx build -t jjulianbayon/buildx:latest -f Dockerfile .'
              }
-          }
+        }
         stage('Test') {
             steps {
                 echo 'Testing..'
