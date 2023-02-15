@@ -12,22 +12,22 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building image..'
-                sh 'docker buildx build -t jjulianbayon/buildx:latest -f Dockerfile .'
-             }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
+                def buildImage = docker.build("test-image", "./") 
+                buildImage.inside {
+                    sh 'docker buildx build -t  buildx:latest -f Dockerfile .'
+                }
             }
-        }
+        }   
         stage('Publish') {
             steps {
                 dir ('Dockerfiles'){
                 echo 'Publishing image to DockerHub..'
-                sh 'docker buildx build --push --platform linux/amd64,linux/arm64 -t jjulianbayon/buildx:latest -f Dockerfile .'
-                }
-            }    
-
+                def testImage = docker.build("test-image", "./") 
+                testImage.inside {
+                sh 'docker buildx create --name multiarch --driver docker-container --use -t jjulianbayon/buildx:latest -f Dockerfile .'
+                 }
+             }    
+           }
         }
         stage('Cleanup') {
             steps {
@@ -39,4 +39,3 @@ pipeline {
         }
     }
 }
-
