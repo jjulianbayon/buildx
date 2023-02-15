@@ -10,13 +10,11 @@ pipeline {
             }
         }
         stage('Build') {
-            steps {
+            script {
                 echo 'Building image..'
-                dir ('.'){
-                sh 'docker buildx build -t jjulianbayon/cotu:latest .'
-                }
-            }
-        }
+                sh 'docker buildx build -t jjulianbayon/buildx:latest -f Dockerfile .'
+             }
+          }
         stage('Test') {
             steps {
                 echo 'Testing..'
@@ -24,9 +22,9 @@ pipeline {
         }
         stage('Publish') {
             steps {
-                dir ('.'){
+                dir ('Dockerfiles'){
                 echo 'Publishing image to DockerHub..'
-                sh 'docker buildx build --push --platform linux/amd64,linux/arm64 -t jjulianbayon/cotu:latest .'
+                sh 'docker buildx build --push --platform linux/amd64,linux/arm64 -t jjulianbayon/buildx:latest -f Dockerfile .'
                 }
             }    
 
